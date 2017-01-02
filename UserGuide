@@ -1,0 +1,82 @@
+User Guide -- sphere simulation
+
+The simulator is simple to operate. On the screen, there is the WebGL canvas element
+and several entry boxes that you can use to modify attributes of the program. These
+changes take effect when the user presses the 'Update' button. They do not retroactively
+modify any balls already in the simulation (except for the global light position).
+Every time the user clicks on the canvas, a ball will be added with the given attributes.
+
+The bounding box is a cube with side length 2, centered at the origin. The camera is placed
+at (0,0,1.1) and is pointed at the origin. 
+
+Weight (float)
+	This is the weight (in kg) of the ball being added. default is 1.
+
+Radius (float)
+	This is the radius (in m) of the ball being added. default is 0.1.
+
+X Velocity, Y velocity, Z velocity (floats)
+	These fields modify the starting velocity (in m/s). Default is (0,0,0).
+
+R, G, B (floats)
+	These are values on [0,1] that define the color of the ball. default is 
+	(1,1,1).
+
+Light X, Light Y, Light Z (floats)
+	These give the location of the directional light, which is later normalized. 
+	Default is (1,1,-1).
+
+There is a button, where the only option is Ball. I have plans (and some code) aimed at adding
+other shapes, But it isn't yet implemented.
+
+Clicking on the screen will add the ball at varying x,y locations, but the z element will always be 0. 
+
+The entries have minimal error checking. If the field is not empty, the program will attempt to convert
+the contents of the entry into a number and use it as a parameter. If the contents cannot be converted,
+None will be used as the attribute, and the behavior of the simulation is undefined.
+
+
+
+DESIGN DECISIONS
+
+- a small amount of code is present that is the basis for other shapes being added, but for the sake of time
+	(and finishing other aspects) It was not used. making the collisions accurate between different shapes 
+	seemed to be a very daunting task. I'm planning to tackle it over break.
+
+- Similarly, I did not get around to implementing shadows, as I had originally planned, due to a lack of 
+	proper planning and time.
+
+- The balls do change their rotation, but it is inaccurate for a few reasons:
+		(1) the balls would need to rotate from a different point of reference than the sphere data sent to 
+				the shader, because they had previously rotated prior to colliding. Resending the data
+				slowed the simulation significantly the more balls were added (because collisions happen more often).
+				I didn't feel confident in storing previous axis-angle pairings and reapplying them every frame - this 
+				seemed very expensive to me, and would slow the simulation as 
+				In other words, it is not perfectly accurate in order to keep the simulation fast.
+		(2) 	Collisions were implemented in a way that is largely elastic. Modifying this so that an appropriate 
+				amount of energy is distributed between the rotation and the translation of the object (and that rotation
+				prior to collision accurately affects the collision) added several layers of complexity to the calculation.
+				I would have had to rewrite the collision code to account for friction and incoming angular momentum as well
+				as just velocity, mass, and radii. I haven't taken anything beyond basic kinematics! I only understand how
+				they work in vacuums, separate from each other. This, like other objects, is one of the first things I want
+				to learn over break. There is some code in the javascript that lays the basis for this (each object
+				has a friction parameter, for example).
+
+
+		more accurate rotation code is commented out inside the bounce function, and you can run this if you wish. It is much
+		slower, though, and still a little bit "glitchy". resending the data takes time and the simulation advances in real time,
+		so you miss some frames. See a few bullets below.
+
+- I decided to borrow the tetrahedron code from some earlier examples in the course (I believe from Angel). I have remnants
+	of another function that makes spheres with less points, but it was still too buggy to use at the time of the video.
+
+- there are parameters at the top of the .js file that allow you to change the size of the bounding cube and the location of 
+	the camera and what not. I enjoyed playing around with these, maybe you will as well.
+
+- in order to keep the simulation accurate temporally (i.e. velocity is independent of framerate), I had to time the difference
+	between the current frame and the last frame and move things according to how much time passed. This code is in render() 
+	and collision().
+
+
+in all, thanks for reading, I hope you enjoy the project as much as I enjoyed making it, and thanks for everything this semester!
+

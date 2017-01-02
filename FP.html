@@ -1,0 +1,98 @@
+<html>
+
+	<head>
+
+		<script id="vertex-shader" type="x-shader/x-vertex">
+			attribute vec4 vPosition;
+			attribute vec3 vColor;
+			attribute vec3 vNormal;
+			varying vec4 fColor;
+			varying vec4 fNormal;
+
+			uniform mat4 mv;
+			uniform mat4 r;
+			uniform mat4 perspective;
+
+			void main()
+			{
+			    gl_Position = (perspective * mv * r * vPosition);
+			    fNormal = (perspective*mv*r*vec4(vNormal, 0.1));
+			    fColor = vec4(vColor, 1.0);
+			    //fNormal = vNormal;
+			}
+		</script>
+
+		<script id="fragment-shader" type="x-shader/x-fragment">
+
+			precision mediump float;
+			varying vec4 fNormal;
+			varying vec4 fColor;
+
+			uniform vec3 lightDir;
+			
+			void main()
+			{
+				//vec3 normal = normalize(fNormal);
+				float light = dot(fNormal, normalize(vec4(lightDir,0.1)));
+			   gl_FragColor = fColor;
+			   gl_FragColor.rgb *= light;
+			}
+		</script>
+		<script type="text/javascript" src="initShaders.js"></script>
+		<script type="text/javascript" src="MVnew.js"></script>
+		<script type="text/javascript" src="webgl-utils.js"></script>
+		<script type="text/javascript" src="FP.js"></script>
+	</head>
+<body>
+	<div>
+		<canvas id="gl-canvas" width="600" height="600"
+		Oops ... your browser doesn't support the HTML5 canvas element
+		</canvas>
+	</div>
+	<div>
+	<div style="clear:left">
+		<input type="text" id="weight">Weight:</input>
+	</div>
+	<div style="clear:left">
+		<input type="text" id="radius">Radius/Side Length</input>
+	</div>
+	<div style="clear:left">
+		<input type="text" id="velocity x">X Velocity</input>
+	</div>
+	<div style="clear:left">
+		<input type="text" id="velocity y">Y Velocity</input>
+	</div>
+	<div style="clear:left">
+		<input type="text" id="velocity z">Z Velocity</input>
+	</div>
+	<div style="clear:left">
+		<input type="text" id="R">R</input>
+	</div>
+	<div style="clear:left">
+		<input type="text" id="G">G</input>
+	</div>
+	<div style="clear:left">
+		<input type="text" id="B">B</input>
+	</div>
+	<div style="clear:left">
+		<input type="text" id="Lx">Light Pos</input>
+	</div>
+	<div style="clear:left">
+		<input type="text" id="Ly">Light Pos</input>
+	</div>
+	<div style="clear:left">
+		<input type="text" id="Lz">Light Pos</input>
+	</div>
+	<div style="clear:left">
+		<button onclick="updateInfo()">Update</button>
+	</div>
+	<form>
+ 	 	<input type="radio" id="shape" value="ball" checked> Ball<br>
+	</form>
+	
+	</div>
+
+
+
+</body>
+</html>
